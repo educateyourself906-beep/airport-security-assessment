@@ -8,13 +8,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
         .assessment-card { display: none; }
-        .assessment-card.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        .assessment-card.active { display: block; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .option-btn.selected { background-color: #2563eb; color: white; border-color: #1e40af; }
         
-        /* Certificate Overlay */
         #certificate {
             display: none;
             position: fixed;
@@ -34,39 +33,33 @@
             width: 100%;
             text-align: center;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            color: #1e293b;
         }
         .cert-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; border-bottom: 2px solid #fbbf24; display: inline-block; margin-bottom: 10px; }
-        
-        /* Progress bar transition */
-        #progress-bar { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div id="assessment-container" class="max-w-md mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
         
-        <!-- Header -->
         <div class="bg-blue-600 p-6 text-white text-center">
             <h1 class="text-2xl font-black italic tracking-tighter uppercase leading-none">Security Checkpoint</h1>
-            <p class="text-[10px] uppercase font-bold tracking-widest opacity-70 mt-1">Final Assessment | Class 222A</p>
+            <p class="text-[10px] uppercase font-bold tracking-widest opacity-70 mt-1">Full 18-Question Final | Class 222A</p>
             <div class="mt-4 bg-blue-800 rounded-full h-2 w-full overflow-hidden">
-                <div id="progress-bar" class="bg-emerald-400 h-full w-0"></div>
+                <div id="progress-bar" class="bg-emerald-400 h-full w-0 transition-all duration-500"></div>
             </div>
         </div>
 
-        <!-- Welcome Screen -->
+        <!-- Start Screen -->
         <div id="card-start" class="assessment-card active p-8 text-center">
             <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-passport text-4xl text-blue-500"></i>
+                <i class="fas fa-id-badge text-4xl text-blue-500"></i>
             </div>
             <h2 class="text-xl font-bold mb-2">Check-in Required</h2>
-            <p class="text-slate-500 text-sm mb-6">Please enter your full name to generate your Security Credentials.</p>
+            <p class="text-slate-500 text-sm mb-6">Enter your name to start. Score 75% for a Badge!</p>
             <input type="text" id="student-name" placeholder="First and Last Name" class="w-full p-4 border-2 border-slate-200 rounded-xl mb-6 focus:border-blue-500 outline-none text-center font-bold">
-            <button onclick="startAssessment()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 active:scale-95 transition-all">BEGIN ASSESSMENT</button>
+            <button onclick="startAssessment()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-all">BEGIN ASSESSMENT</button>
         </div>
 
-        <!-- Question Space -->
         <div id="question-space"></div>
 
         <!-- Results Screen -->
@@ -79,133 +72,125 @@
                 <i class="fas fa-medal"></i> CLAIM SECURITY BADGE
             </button>
 
-            <button onclick="window.location.reload()" class="w-full bg-slate-100 text-slate-600 font-bold py-3 rounded-xl hover:bg-slate-200 transition-all text-sm">RESTART TEST</button>
+            <button onclick="window.location.reload()" class="w-full bg-slate-100 text-slate-600 font-bold py-3 rounded-xl hover:bg-slate-200 transition-all text-sm uppercase">Try Again</button>
         </div>
 
-        <!-- Navigation -->
+        <!-- Nav -->
         <div id="nav-footer" class="hidden p-6 bg-slate-50 border-t border-slate-100 flex justify-between gap-4">
-            <button onclick="prevCard()" class="flex-1 py-3 px-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-400 hover:text-slate-600">Back</button>
-            <button onclick="nextCard()" id="next-btn" class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl font-bold shadow-md opacity-50 cursor-not-allowed" disabled>Next</button>
+            <button onclick="prevCard()" class="flex-1 py-3 px-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-400">Back</button>
+            <button id="next-btn" onclick="nextCard()" class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl font-bold shadow-md opacity-50 cursor-not-allowed" disabled>Next</button>
         </div>
     </div>
 
-    <!-- Badge/Certificate Overlay -->
+    <!-- Badge Overlay -->
     <div id="certificate" onclick="hideCertificate()">
         <div class="cert-paper" onclick="event.stopPropagation()">
             <div class="border-4 border-slate-100 p-6 relative">
-                <button onclick="hideCertificate()" class="absolute top-2 right-2 text-slate-300 hover:text-slate-600">
-                    <i class="fas fa-times"></i>
-                </button>
                 <div class="text-blue-900 mb-2"><i class="fas fa-plane-shield text-5xl"></i></div>
                 <h2 class="cert-title">CERTIFICATE</h2>
                 <p class="uppercase tracking-widest text-slate-400 text-[10px] font-black mb-6">Official Security Specialist Badge</p>
-                <p class="text-slate-500 italic text-sm">This digital credentials is awarded to</p>
-                <h3 id="cert-name" class="text-2xl font-black my-4 text-blue-700 border-b-2 border-blue-100 inline-block px-4">Student</h3>
-                <p class="text-slate-600 text-sm leading-relaxed px-4">For demonstrating technical mastery of Airport Security Protocols and Vocabulary with a score of <span id="cert-score-text" class="font-bold text-emerald-600">0%</span>.</p>
-                
+                <p class="text-slate-500 italic text-sm">This digital badge is awarded to</p>
+                <h3 id="cert-name" class="text-2xl font-black my-4 text-blue-700 border-b-2 border-blue-100 inline-block px-4 underline">Student</h3>
+                <p class="text-slate-600 text-sm leading-relaxed px-4">For demonstrating technical mastery of Airport Security Protocols with a score of <span id="cert-score-text" class="font-bold text-emerald-600">0%</span>.</p>
                 <div class="mt-10 flex justify-between items-end">
                     <div class="text-left">
                         <p class="font-bold text-sm">April 20, 2026</p>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Issue Date | Class 222A</p>
+                        <p class="text-[10px] text-slate-400 font-bold">Issue Date</p>
                     </div>
-                    <div class="relative text-right">
-                        <i class="fas fa-award text-7xl text-yellow-400 opacity-20 absolute -top-8 right-0"></i>
-                        <p class="font-black text-blue-900 text-sm italic relative z-10">SECURITY EXPERT</p>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase relative z-10">Certification Seal</p>
+                    <div class="text-right">
+                        <i class="fas fa-award text-5xl text-yellow-400"></i>
+                        <p class="font-black text-blue-900 text-xs italic">SECURITY EXPERT</p>
                     </div>
                 </div>
             </div>
-            <p class="mt-6 text-[10px] text-slate-400 font-bold">SCREENSHOT THIS BADGE FOR YOUR SEP FOLDER</p>
+            <p class="mt-6 text-[10px] text-slate-400 font-bold uppercase">Screenshot for your folder</p>
         </div>
     </div>
 
     <script>
         const questions = [
-            // PAGE 4 TRUE/FALSE
-            { id: 'q1', text: "Martin shows his driver's license for identification.", answer: false, section: "Page 4: Comprehension" },
-            { id: 'q2', text: "The Baxters' final destination is Chicago.", answer: false, section: "Page 4: Comprehension" },
-            { id: 'q3', text: "The Baxters have a direct flight to New York.", answer: false, section: "Page 4: Comprehension" },
-            { id: 'q4', text: "Martin wears his shoes through the metal detector.", answer: false, section: "Page 4: Comprehension" },
-            { id: 'q5', text: "Martin's belt sets off the metal detector.", answer: true, section: "Page 4: Comprehension" },
-            { id: 'q6', text: "Ellen is allowed to take her lipstick and toothpaste on the plane.", answer: true, section: "Page 4: Comprehension" },
-            { id: 'q7', text: "Ellen goes through the metal detector before Martin.", answer: false, section: "Page 4: Comprehension" },
+            // Page 4: True/False
+            { q: "Martin shows his driver's license for identification.", a: false, s: "Page 4: Comprehension" },
+            { q: "The Baxters' final destination is Chicago.", a: false, s: "Page 4: Comprehension" },
+            { q: "The Baxters have a direct flight to Paris.", a: false, s: "Page 4: Comprehension" },
+            { q: "Martin wears his shoes through the metal detector.", a: false, s: "Page 4: Comprehension" },
+            { q: "Martin's belt sets off the metal detector.", a: true, s: "Page 4: Comprehension" },
+            { q: "Ellen is allowed to take her lipstick and toothpaste on the plane.", a: true, s: "Page 4: Comprehension" },
+            { q: "Ellen goes through the metal detector before Martin.", a: false, s: "Page 4: Comprehension" },
             
-            // PAGE 4 MULTIPLE CHOICE
-            { id: 'q8', text: "How many bags are Martin and his wife checking?", options: ["One", "Two", "Three"], answer: 1, section: "Page 4: Details" },
-            { id: 'q9', text: "What do the Baxters have to identify their suitcases?", options: ["Boarding passes", "Garment bags", "Luggage tags"], answer: 2, section: "Page 4: Details" },
-            { id: 'q10', text: "Where did the airline agent put Martin's baggage claim?", options: ["In his pocket", "In his carry-on", "On the boarding pass"], answer: 2, section: "Page 4: Details" },
+            // Page 4: Multiple Choice
+            { q: "How many bags are Martin and his wife checking?", opts: ["One", "Two", "Three"], a: 1, s: "Page 4: Details" },
+            { q: "What do the Baxters have to identify their suitcases?", opts: ["Boarding passes", "Garment bags", "Luggage tags"], a: 2, s: "Page 4: Details" },
+            { q: "Where did the airline agent put Martin's baggage claim ticket?", opts: ["In his pocket", "In his carry-on", "On the back of the boarding pass"], a: 2, s: "Page 4: Details" },
             
-            // PAGE 5 VOCABULARY
-            { id: 'q11', text: "\"I need some ____ to get a baggage cart.\"", options: ["Coins", "Boarding passes", "Security"], answer: 0, section: "Page 5: Vocabulary" },
-            { id: 'q12', text: "\"You need to show government-issued ____.\"", options: ["Unattended", "Gate", "Identification (ID)"], answer: 2, section: "Page 5: Vocabulary" },
-            { id: 'q13', text: "\"Never leave your baggage ____.\"", options: ["Unattended", "Underground", "Pack"], answer: 0, section: "Page 5: Vocabulary" },
-            { id: 'q14', text: "\"Check your ____ for your gate number.\"", options: ["Security", "Boarding pass", "Ounces"], answer: 1, section: "Page 5: Vocabulary" },
-            { id: 'q15', text: "\"Don't forget to ____ a bathing suit for the trip.\"", options: ["Gate", "Ounces", "Pack"], answer: 2, section: "Page 5: Vocabulary" },
-            { id: 'q16', text: "\"You can't take that lotion. It is more than three ____.\"", options: ["Ounces", "Gates", "Coins"], answer: 0, section: "Page 5: Vocabulary" },
-            { id: 'q17', text: "\"Empty your pockets when you go through ____.\"", options: ["Gate", "Security", "Unattended"], answer: 1, section: "Page 5: Vocabulary" },
-            { id: 'q18', text: "\"Passengers now need to go to ____ 17.\"", options: ["Boarding pass", "Ounces", "Gate"], answer: 2, section: "Page 5: Vocabulary" }
+            // Page 5: Vocabulary
+            { q: "\"I need some ____ to get a baggage cart.\"", opts: ["Coins", "Boarding passes", "Security"], a: 0, s: "Page 5: Vocabulary" },
+            { q: "\"You need to show government-issued ____.\"", opts: ["Unattended", "Gate", "Identification (ID)"], a: 2, s: "Page 5: Vocabulary" },
+            { q: "\"Never leave your baggage ____.\"", opts: ["Unattended", "Underground", "Pack"], a: 0, s: "Page 5: Vocabulary" },
+            { q: "\"Check your ____ for your gate number.\"", opts: ["Security", "Boarding pass", "Ounces"], a: 1, s: "Page 5: Vocabulary" },
+            { q: "\"Don't forget to ____ a bathing suit for the trip.\"", opts: ["Gate", "Ounces", "Pack"], a: 2, s: "Page 5: Vocabulary" },
+            { q: "\"You can't take that lotion. It is more than three ____.\"", opts: ["Ounces", "Gates", "Coins"], a: 0, s: "Page 5: Vocabulary" },
+            { q: "\"Empty your pockets when you go through ____.\"", opts: ["Gate", "Security", "Unattended"], a: 1, s: "Page 5: Vocabulary" },
+            { q: "\"Passengers now need to go to ____ 17.\"", opts: ["Boarding pass", "Ounces", "Gate"], a: 2, s: "Page 5: Vocabulary" }
         ];
 
         let currentStep = 0;
         let studentAnswers = {};
+        let name = "";
 
         function startAssessment() {
-            const name = document.getElementById('student-name').value;
-            if (!name) return alert("Please enter your name to proceed.");
+            name = document.getElementById('student-name').value;
+            if (!name) return alert("Enter your name!");
             document.getElementById('cert-name').innerText = name;
             
             const space = document.getElementById('question-space');
-            space.innerHTML = ''; // Clear previous
-            
-            questions.forEach((q, idx) => {
+            space.innerHTML = ''; 
+            questions.forEach((q, i) => {
                 const card = document.createElement('div');
-                card.id = `card-q${idx + 1}`;
+                card.id = `card-q${i + 1}`;
                 card.className = 'assessment-card p-8';
+                let html = `<span class="px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-black rounded uppercase">${q.s}</span>`;
+                html += `<h3 class="text-xl font-bold text-slate-800 mt-4 mb-8">${q.q}</h3><div class="space-y-3">`;
                 
-                let optionsHtml = '';
-                if (!q.options) { // True/False Card
-                    optionsHtml = `
-                        <button onclick="selectOption(${idx}, true, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold mb-4 flex justify-between items-center group">
-                            True <i class="fas fa-check opacity-0 group-[.selected]:opacity-100"></i>
-                        </button>
-                        <button onclick="selectOption(${idx}, false, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold flex justify-between items-center group">
-                            False <i class="fas fa-times opacity-0 group-[.selected]:opacity-100"></i>
-                        </button>
-                    `;
-                } else { // Multiple Choice Card
-                    q.options.forEach((opt, oIdx) => {
-                        optionsHtml += `
-                            <button onclick="selectOption(${idx}, ${oIdx}, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold mb-4 flex justify-between items-center group">
-                                ${opt} <i class="fas fa-check-circle opacity-0 group-[.selected]:opacity-100"></i>
-                            </button>`;
+                if (q.opts) {
+                    q.opts.forEach((o, oi) => {
+                        html += `<button onclick="select(${i}, ${oi}, this)" class="opt-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold transition"> ${o} </button>`;
                     });
+                } else {
+                    html += `<button onclick="select(${i}, true, this)" class="opt-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold mb-3"> True </button>`;
+                    html += `<button onclick="select(${i}, false, this)" class="opt-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold"> False </button>`;
                 }
-
-                card.innerHTML = `
-                    <div class="mb-4 flex items-center gap-2">
-                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded uppercase tracking-wider">${q.section}</span>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-800 leading-snug mb-8">${q.text}</h3>
-                    <div class="space-y-1">${optionsHtml}</div>
-                `;
+                html += `</div>`;
+                card.innerHTML = html;
                 space.appendChild(card);
             });
-
             document.getElementById('nav-footer').classList.remove('hidden');
             nextCard();
+        }
+
+        function select(qi, val, btn) {
+            studentAnswers[qi] = val;
+            btn.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected', 'border-blue-600', 'bg-blue-50'));
+            btn.classList.add('selected', 'border-blue-600', 'bg-blue-50');
+            const n = document.getElementById('next-btn');
+            n.disabled = false; n.classList.remove('opacity-50', 'cursor-not-allowed');
         }
 
         function nextCard() {
             document.querySelectorAll('.assessment-card').forEach(c => c.classList.remove('active'));
             currentStep++;
-            
             if (currentStep <= questions.length) {
                 document.getElementById(`card-q${currentStep}`).classList.add('active');
-                checkNavState();
+                const n = document.getElementById('next-btn');
+                if (studentAnswers[currentStep-1] === undefined) {
+                    n.disabled = true; n.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    n.disabled = false; n.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
             } else {
-                calculateResults();
+                finish();
             }
-            updateProgress();
+            document.getElementById('progress-bar').style.width = (currentStep/questions.length)*100 + "%";
         }
 
         function prevCard() {
@@ -213,63 +198,33 @@
                 document.querySelectorAll('.assessment-card').forEach(c => c.classList.remove('active'));
                 currentStep--;
                 document.getElementById(`card-q${currentStep}`).classList.add('active');
-                checkNavState();
-                updateProgress();
+                document.getElementById('next-btn').disabled = false;
+                document.getElementById('next-btn').classList.remove('opacity-50');
             }
         }
 
-        function selectOption(qIdx, val, btn) {
-            studentAnswers[qIdx] = val;
-            const card = btn.parentElement;
-            card.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected', 'border-blue-600', 'bg-blue-50'));
-            btn.classList.add('selected', 'border-blue-600', 'bg-blue-50');
-            enableNext();
-        }
-
-        function checkNavState() {
-            const btn = document.getElementById('next-btn');
-            if (studentAnswers[currentStep - 1] === undefined) {
-                btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-            } else {
-                enableNext();
-            }
-        }
-
-        function enableNext() {
-            const btn = document.getElementById('next-btn');
-            btn.disabled = false;
-            btn.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
-
-        function updateProgress() {
-            const pct = (currentStep / questions.length) * 100;
-            document.getElementById('progress-bar').style.width = pct + "%";
-        }
-
-        function calculateResults() {
-            let score = 0;
-            questions.forEach((q, i) => { if (studentAnswers[i] === q.answer) score++; });
-            
-            const pct = Math.round((score / questions.length) * 100);
+        function finish() {
+            let s = 0;
+            questions.forEach((q, i) => { if(studentAnswers[i] === q.a) s++; });
+            const p = Math.round((s/questions.length)*100);
             document.getElementById('card-results').classList.add('active');
             document.getElementById('nav-footer').classList.add('hidden');
-            document.getElementById('result-score').innerText = `${score} / ${questions.length}`;
-            document.getElementById('cert-score-text').innerText = pct + "%";
+            document.getElementById('result-score').innerText = `${s} / ${questions.length}`;
+            document.getElementById('cert-score-text').innerText = p + "%";
 
-            const msg = document.getElementById('result-msg');
+            const m = document.getElementById('result-msg');
             const icon = document.getElementById('result-icon');
-            const certBtn = document.getElementById('cert-btn');
+            const cb = document.getElementById('cert-btn');
 
-            if (pct >= 75) {
-                certBtn.classList.remove('hidden');
-                msg.innerText = "Excellent! You are a Security Expert.";
-                icon.innerHTML = '<i class="fas fa-award text-8xl text-yellow-500 animate-bounce"></i>';
-            } else if (pct >= 50) {
-                msg.innerText = "Good job! You passed the security check.";
+            if (p >= 75) {
+                cb.classList.remove('hidden');
+                m.innerText = "Excellent! You earned the badge.";
+                icon.innerHTML = '<i class="fas fa-medal text-7xl text-yellow-500 animate-bounce"></i>';
+            } else if (p >= 60) {
+                m.innerText = "Good job. You passed the check!";
                 icon.innerHTML = '<i class="fas fa-plane-departure text-7xl text-blue-500"></i>';
             } else {
-                msg.innerText = "Review the vocab and try again.";
+                m.innerText = "Please review the vocab and try again.";
                 icon.innerHTML = '<i class="fas fa-exclamation-triangle text-7xl text-red-500"></i>';
             }
         }

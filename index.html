@@ -8,9 +8,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
         .assessment-card { display: none; }
-        .assessment-card.active { display: block; }
+        .assessment-card.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .option-btn.selected { background-color: #2563eb; color: white; border-color: #1e40af; }
         
         /* Certificate Overlay */
@@ -18,24 +19,27 @@
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 100;
+            background: rgba(15, 23, 42, 0.98);
+            z-index: 1000;
             padding: 20px;
             align-items: center;
             justify-content: center;
         }
         .cert-paper {
             background: white;
-            padding: 40px;
+            padding: 30px;
             border: 12px double #1e293b;
             position: relative;
-            max-width: 600px;
+            max-width: 550px;
             width: 100%;
             text-align: center;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
             color: #1e293b;
         }
-        .cert-title { font-family: 'Playfair Display', serif; font-size: 2.8rem; border-bottom: 2px solid #fbbf24; display: inline-block; margin-bottom: 10px; }
+        .cert-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; border-bottom: 2px solid #fbbf24; display: inline-block; margin-bottom: 10px; }
+        
+        /* Progress bar transition */
+        #progress-bar { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -44,40 +48,43 @@
         
         <!-- Header -->
         <div class="bg-blue-600 p-6 text-white text-center">
-            <h1 class="text-2xl font-black italic tracking-tighter uppercase">Security Checkpoint</h1>
-            <p class="text-sm opacity-80">April 20 Final Assessment | Class 222A</p>
-            <div class="mt-4 bg-blue-700 rounded-full h-2 w-full overflow-hidden">
-                <div id="progress-bar" class="bg-emerald-400 h-full w-0 transition-all duration-500"></div>
+            <h1 class="text-2xl font-black italic tracking-tighter uppercase leading-none">Security Checkpoint</h1>
+            <p class="text-[10px] uppercase font-bold tracking-widest opacity-70 mt-1">Final Assessment | Class 222A</p>
+            <div class="mt-4 bg-blue-800 rounded-full h-2 w-full overflow-hidden">
+                <div id="progress-bar" class="bg-emerald-400 h-full w-0"></div>
             </div>
         </div>
 
         <!-- Welcome Screen -->
         <div id="card-start" class="assessment-card active p-8 text-center">
-            <i class="fas fa-passport text-6xl text-blue-100 mb-6"></i>
-            <h2 class="text-xl font-bold mb-4">Enter your name to start</h2>
-            <input type="text" id="student-name" placeholder="Full Name" class="w-full p-4 border-2 border-slate-200 rounded-xl mb-6 focus:border-blue-500 outline-none">
-            <button onclick="startAssessment()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-all">START ASSESSMENT</button>
+            <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-passport text-4xl text-blue-500"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-2">Check-in Required</h2>
+            <p class="text-slate-500 text-sm mb-6">Please enter your full name to generate your Security Credentials.</p>
+            <input type="text" id="student-name" placeholder="First and Last Name" class="w-full p-4 border-2 border-slate-200 rounded-xl mb-6 focus:border-blue-500 outline-none text-center font-bold">
+            <button onclick="startAssessment()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 active:scale-95 transition-all">BEGIN ASSESSMENT</button>
         </div>
 
-        <!-- Questions Injected Here -->
+        <!-- Question Space -->
         <div id="question-space"></div>
 
         <!-- Results Screen -->
         <div id="card-results" class="assessment-card p-8 text-center">
             <div id="result-icon" class="mb-6"></div>
-            <h2 class="text-4xl font-black mb-2" id="result-score"></h2>
-            <p class="text-slate-500 mb-8" id="result-msg"></p>
+            <h2 class="text-4xl font-black mb-1 text-slate-800" id="result-score"></h2>
+            <p class="text-slate-500 font-medium mb-8" id="result-msg"></p>
             
-            <button id="cert-btn" onclick="showCertificate()" class="hidden w-full bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg mb-4 flex items-center justify-center gap-2">
-                <i class="fas fa-medal"></i> VIEW SECURITY BADGE
+            <button id="cert-btn" onclick="showCertificate()" class="hidden w-full bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg mb-4 flex items-center justify-center gap-2 transform hover:scale-105 transition-transform">
+                <i class="fas fa-medal"></i> CLAIM SECURITY BADGE
             </button>
 
-            <button onclick="window.location.reload()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg">RESTART</button>
+            <button onclick="window.location.reload()" class="w-full bg-slate-100 text-slate-600 font-bold py-3 rounded-xl hover:bg-slate-200 transition-all text-sm">RESTART TEST</button>
         </div>
 
         <!-- Navigation -->
         <div id="nav-footer" class="hidden p-6 bg-slate-50 border-t border-slate-100 flex justify-between gap-4">
-            <button onclick="prevCard()" class="flex-1 py-3 px-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-400">Back</button>
+            <button onclick="prevCard()" class="flex-1 py-3 px-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-400 hover:text-slate-600">Back</button>
             <button onclick="nextCard()" id="next-btn" class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl font-bold shadow-md opacity-50 cursor-not-allowed" disabled>Next</button>
         </div>
     </div>
@@ -85,26 +92,30 @@
     <!-- Badge/Certificate Overlay -->
     <div id="certificate" onclick="hideCertificate()">
         <div class="cert-paper" onclick="event.stopPropagation()">
-            <div class="border-4 border-slate-100 p-6">
-                <div class="text-blue-900 mb-4"><i class="fas fa-plane-shield text-5xl"></i></div>
+            <div class="border-4 border-slate-100 p-6 relative">
+                <button onclick="hideCertificate()" class="absolute top-2 right-2 text-slate-300 hover:text-slate-600">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="text-blue-900 mb-2"><i class="fas fa-plane-shield text-5xl"></i></div>
                 <h2 class="cert-title">CERTIFICATE</h2>
-                <p class="uppercase tracking-widest text-slate-400 font-bold mb-6">Airport Security Specialist</p>
-                <p class="text-slate-500 italic">This digital badge is awarded to</p>
-                <h3 id="cert-name" class="text-3xl font-black my-4 text-blue-700 underline underline-offset-8">Student</h3>
-                <p class="text-slate-600 px-6">For successfully completing the Airport Security Technical Assessment with a score of <span id="cert-score-text" class="font-bold">0%</span>.</p>
+                <p class="uppercase tracking-widest text-slate-400 text-[10px] font-black mb-6">Official Security Specialist Badge</p>
+                <p class="text-slate-500 italic text-sm">This digital credentials is awarded to</p>
+                <h3 id="cert-name" class="text-2xl font-black my-4 text-blue-700 border-b-2 border-blue-100 inline-block px-4">Student</h3>
+                <p class="text-slate-600 text-sm leading-relaxed px-4">For demonstrating technical mastery of Airport Security Protocols and Vocabulary with a score of <span id="cert-score-text" class="font-bold text-emerald-600">0%</span>.</p>
                 
-                <div class="mt-12 flex justify-between items-end">
+                <div class="mt-10 flex justify-between items-end">
                     <div class="text-left">
-                        <p class="font-bold">April 20, 2026</p>
-                        <p class="text-xs text-slate-400">CLASS 222A</p>
+                        <p class="font-bold text-sm">April 20, 2026</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Issue Date | Class 222A</p>
                     </div>
-                    <div class="relative">
-                        <i class="fas fa-award text-8xl text-yellow-400 opacity-20 absolute -top-10 left-1/2 -translate-x-1/2"></i>
-                        <p class="font-bold text-blue-900 italic">Security Expert</p>
+                    <div class="relative text-right">
+                        <i class="fas fa-award text-7xl text-yellow-400 opacity-20 absolute -top-8 right-0"></i>
+                        <p class="font-black text-blue-900 text-sm italic relative z-10">SECURITY EXPERT</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase relative z-10">Certification Seal</p>
                     </div>
                 </div>
             </div>
-            <p class="mt-6 text-xs text-slate-400">Screenshot this badge for your student folder.</p>
+            <p class="mt-6 text-[10px] text-slate-400 font-bold">SCREENSHOT THIS BADGE FOR YOUR SEP FOLDER</p>
         </div>
     </div>
 
@@ -140,31 +151,42 @@
 
         function startAssessment() {
             const name = document.getElementById('student-name').value;
-            if (!name) return alert("Please enter your name.");
+            if (!name) return alert("Please enter your name to proceed.");
             document.getElementById('cert-name').innerText = name;
             
             const space = document.getElementById('question-space');
+            space.innerHTML = ''; // Clear previous
+            
             questions.forEach((q, idx) => {
                 const card = document.createElement('div');
                 card.id = `card-q${idx + 1}`;
                 card.className = 'assessment-card p-8';
                 
                 let optionsHtml = '';
-                if (!q.options) { // True/False
+                if (!q.options) { // True/False Card
                     optionsHtml = `
-                        <button onclick="selectOption(${idx}, true, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold mb-4">True</button>
-                        <button onclick="selectOption(${idx}, false, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold">False</button>
+                        <button onclick="selectOption(${idx}, true, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold mb-4 flex justify-between items-center group">
+                            True <i class="fas fa-check opacity-0 group-[.selected]:opacity-100"></i>
+                        </button>
+                        <button onclick="selectOption(${idx}, false, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold flex justify-between items-center group">
+                            False <i class="fas fa-times opacity-0 group-[.selected]:opacity-100"></i>
+                        </button>
                     `;
-                } else { // Multiple Choice
+                } else { // Multiple Choice Card
                     q.options.forEach((opt, oIdx) => {
-                        optionsHtml += `<button onclick="selectOption(${idx}, ${oIdx}, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold mb-4">${opt}</button>`;
+                        optionsHtml += `
+                            <button onclick="selectOption(${idx}, ${oIdx}, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold mb-4 flex justify-between items-center group">
+                                ${opt} <i class="fas fa-check-circle opacity-0 group-[.selected]:opacity-100"></i>
+                            </button>`;
                     });
                 }
 
                 card.innerHTML = `
-                    <span class="text-xs font-bold text-blue-600 uppercase">${q.section}</span>
-                    <h3 class="text-xl font-bold mt-2 mb-6">${q.text}</h3>
-                    <div class="space-y-2">${optionsHtml}</div>
+                    <div class="mb-4 flex items-center gap-2">
+                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-black rounded uppercase tracking-wider">${q.section}</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 leading-snug mb-8">${q.text}</h3>
+                    <div class="space-y-1">${optionsHtml}</div>
                 `;
                 space.appendChild(card);
             });
@@ -198,8 +220,9 @@
 
         function selectOption(qIdx, val, btn) {
             studentAnswers[qIdx] = val;
-            btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected', 'border-blue-600'));
-            btn.classList.add('selected', 'border-blue-600');
+            const card = btn.parentElement;
+            card.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected', 'border-blue-600', 'bg-blue-50'));
+            btn.classList.add('selected', 'border-blue-600', 'bg-blue-50');
             enableNext();
         }
 
@@ -240,13 +263,13 @@
 
             if (pct >= 75) {
                 certBtn.classList.remove('hidden');
-                msg.innerText = "Congratulations! You are a Security Expert.";
-                icon.innerHTML = '<i class="fas fa-medal text-7xl text-yellow-500"></i>';
+                msg.innerText = "Excellent! You are a Security Expert.";
+                icon.innerHTML = '<i class="fas fa-award text-8xl text-yellow-500 animate-bounce"></i>';
             } else if (pct >= 50) {
-                msg.innerText = "Good job. You passed the check!";
+                msg.innerText = "Good job! You passed the security check.";
                 icon.innerHTML = '<i class="fas fa-plane-departure text-7xl text-blue-500"></i>';
             } else {
-                msg.innerText = "Please review the vocab on Page 5.";
+                msg.innerText = "Review the vocab and try again.";
                 icon.innerHTML = '<i class="fas fa-exclamation-triangle text-7xl text-red-500"></i>';
             }
         }

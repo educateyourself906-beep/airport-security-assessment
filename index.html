@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airport Assessment - Class 222A</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .assessment-card { display: none; }
+        .assessment-card.active { display: block; }
+        .option-btn.selected { background-color: #2563eb; color: white; border-color: #1e40af; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="assessment-container" class="max-w-md mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+        
+        <!-- Header -->
+        <div class="bg-blue-600 p-6 text-white text-center">
+            <h1 class="text-2xl font-black italic tracking-tighter uppercase">Security Checkpoint</h1>
+            <p class="text-sm opacity-80">April 20 Assessment | Class 222A</p>
+            <div class="mt-4 bg-blue-700 rounded-full h-2 w-full overflow-hidden">
+                <div id="progress-bar" class="bg-emerald-400 h-full w-0 transition-all duration-500"></div>
+            </div>
+        </div>
+
+        <!-- Student Info (First Screen) -->
+        <div id="card-start" class="assessment-card active p-8 text-center">
+            <i class="fas fa-passport text-6xl text-blue-100 mb-6"></i>
+            <h2 class="text-xl font-bold mb-4">Enter your name to begin the assessment</h2>
+            <input type="text" id="student-name" placeholder="First and Last Name" class="w-full p-4 border-2 border-slate-200 rounded-xl mb-6 focus:border-blue-500 outline-none">
+            <button onclick="startAssessment()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 active:scale-95 transition-all">START ASSESSMENT</button>
+        </div>
+
+        <!-- Part 1: Page 4 Comprehension (T/F) -->
+        <div id="card-q1" class="assessment-card p-8">
+            <span class="text-xs font-bold text-blue-600 uppercase">Part 1: Comprehension</span>
+            <h3 class="text-xl font-bold mt-2 mb-6">Martin's bag is missing.</h3>
+            <div class="space-y-4">
+                <button onclick="selectOption('q1', true, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold hover:bg-slate-50 transition">True</button>
+                <button onclick="selectOption('q1', false, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold hover:bg-slate-50 transition">False</button>
+            </div>
+        </div>
+
+        <div id="card-q2" class="assessment-card p-8">
+            <span class="text-xs font-bold text-blue-600 uppercase">Part 1: Comprehension</span>
+            <h3 class="text-xl font-bold mt-2 mb-6">Martin has to empty his pockets.</h3>
+            <div class="space-y-4">
+                <button onclick="selectOption('q2', true, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold hover:bg-slate-50 transition">True</button>
+                <button onclick="selectOption('q2', false, this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold hover:bg-slate-50 transition">False</button>
+            </div>
+        </div>
+
+        <!-- Part 2: Page 5 Vocabulary Fill-in -->
+        <div id="card-q3" class="assessment-card p-8">
+            <span class="text-xs font-bold text-emerald-600 uppercase">Part 2: Vocabulary Review</span>
+            <h3 class="text-xl font-bold mt-2 mb-6">"Please put your laptop in a separate ________."</h3>
+            <div class="space-y-4">
+                <button onclick="selectOption('q3', 'A', this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold hover:bg-slate-50 transition">screening bin</button>
+                <button onclick="selectOption('q3', 'B', this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold hover:bg-slate-50 transition">passport</button>
+                <button onclick="selectOption('q3', 'C', this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold hover:bg-slate-50 transition">coin</button>
+            </div>
+        </div>
+
+        <div id="card-q4" class="assessment-card p-8">
+            <span class="text-xs font-bold text-emerald-600 uppercase">Part 2: Vocabulary Review</span>
+            <h3 class="text-xl font-bold mt-2 mb-6">"Don't leave your bags ________."</h3>
+            <div class="space-y-4">
+                <button onclick="selectOption('q4', 'A', this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold hover:bg-slate-50 transition">unattended</button>
+                <button onclick="selectOption('q4', 'B', this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold hover:bg-slate-50 transition">underground</button>
+                <button onclick="selectOption('q4', 'C', this)" class="option-btn w-full p-4 border-2 border-slate-100 rounded-xl text-left font-bold hover:bg-slate-50 transition">unhappy</button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="card-results" class="assessment-card p-8 text-center">
+            <div id="result-icon" class="mb-6"></div>
+            <h2 class="text-3xl font-black mb-2" id="result-score"></h2>
+            <p class="text-slate-500 mb-8" id="result-msg"></p>
+            <button onclick="window.location.reload()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg">FINISH</button>
+        </div>
+
+        <!-- Navigation -->
+        <div id="nav-footer" class="hidden p-6 bg-slate-50 border-t border-slate-100 flex justify-between gap-4">
+            <button onclick="prevCard()" class="flex-1 py-3 px-4 bg-white border border-slate-200 rounded-xl font-bold text-slate-400 hover:text-slate-600 transition">Back</button>
+            <button onclick="nextCard()" id="next-btn" class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition opacity-50 cursor-not-allowed" disabled>Next</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const steps = ['start', 'q1', 'q2', 'q3', 'q4', 'results'];
+        const answers = { q1: false, q2: true, q3: 'A', q4: 'A' };
+        let studentAnswers = {};
+
+        function startAssessment() {
+            const name = document.getElementById('student-name').value;
+            if (!name) {
+                alert("Please enter your name.");
+                return;
+            }
+            document.getElementById('nav-footer').classList.remove('hidden');
+            nextCard();
+        }
+
+        function updateProgress() {
+            const pct = ((currentStep - 1) / (steps.length - 2)) * 100;
+            document.getElementById('progress-bar').style.width = pct + "%";
+        }
+
+        function nextCard() {
+            if (currentStep < steps.length - 1) {
+                document.querySelectorAll('.assessment-card').forEach(c => c.classList.remove('active'));
+                currentStep++;
+                document.getElementById('card-' + steps[currentStep]).classList.add('active');
+                
+                // Disable next button for questions until choice is made
+                if (currentStep > 0 && currentStep < steps.length - 1) {
+                    const qId = steps[currentStep];
+                    if (!studentAnswers[qId]) {
+                        document.getElementById('next-btn').disabled = true;
+                        document.getElementById('next-btn').classList.add('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        enableNext();
+                    }
+                }
+                
+                if (currentStep === steps.length - 1) {
+                    calculateResults();
+                    document.getElementById('nav-footer').classList.add('hidden');
+                }
+                updateProgress();
+            }
+        }
+
+        function prevCard() {
+            if (currentStep > 1) {
+                document.querySelectorAll('.assessment-card').forEach(c => c.classList.remove('active'));
+                currentStep--;
+                document.getElementById('card-' + steps[currentStep]).classList.add('active');
+                enableNext();
+                updateProgress();
+            }
+        }
+
+        function selectOption(qId, val, btn) {
+            studentAnswers[qId] = val;
+            
+            // Visual feedback
+            const options = btn.parentElement.querySelectorAll('.option-btn');
+            options.forEach(o => o.classList.remove('selected', 'border-blue-600'));
+            btn.classList.add('selected', 'border-blue-600');
+            
+            enableNext();
+        }
+
+        function enableNext() {
+            const btn = document.getElementById('next-btn');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        function calculateResults() {
+            let score = 0;
+            const total = Object.keys(answers).length;
+            
+            for (let q in answers) {
+                if (studentAnswers[q] === answers[q]) score++;
+            }
+
+            const pct = (score / total) * 100;
+            const scoreDisplay = document.getElementById('result-score');
+            const msgDisplay = document.getElementById('result-msg');
+            const iconDisplay = document.getElementById('result-icon');
+
+            scoreDisplay.innerText = score + " / " + total;
+            
+            if (pct >= 100) {
+                msgDisplay.innerText = "Excellent! You are a Security Expert.";
+                iconDisplay.innerHTML = '<i class="fas fa-check-circle text-7xl text-emerald-500"></i>';
+            } else if (pct >= 50) {
+                msgDisplay.innerText = "Good job. Review Page 4 & 5 one more time.";
+                iconDisplay.innerHTML = '<i class="fas fa-info-circle text-7xl text-blue-500"></i>';
+            } else {
+                msgDisplay.innerText = "Please see the teacher for a review.";
+                iconDisplay.innerHTML = '<i class="fas fa-exclamation-triangle text-7xl text-orange-500"></i>';
+            }
+        }
+    </script>
+</body>
+</html>
